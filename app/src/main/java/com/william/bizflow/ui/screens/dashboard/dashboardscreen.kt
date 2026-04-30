@@ -1,0 +1,140 @@
+package com.william.bizflow.ui.screens.onbording
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun OnboardingScreen(navController: NavController) {
+    val pages = listOf(
+        OnboardingData("Track Sales", "Record every transaction instantly and never lose track of your revenue."),
+        OnboardingData("Manage Stock", "Get real-time updates on your inventory and low-stock alerts."),
+        OnboardingData("View Analytics", "Understand your profit trends with clean, visual dashboards.")
+    )
+
+    val pagerState = rememberPagerState(pageCount = { pages.size })
+    val scope = rememberCoroutineScope()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Skip Button
+        TextButton(
+            onClick = { navController.navigate("login") },
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text("Skip", color = Color.Gray)
+        }
+
+        // Pager Content
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(1f)
+        ) { position ->
+            OnboardingPagerItem(pages[position])
+        }
+
+        // Bottom Section: Indicators & Button
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Page Indicators
+            Row {
+                repeat(pages.size) { index ->
+                    Box(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .size(if (pagerState.currentPage == index) 12.dp else 8.dp)
+                            .clip(CircleShape)
+                            .background(if (pagerState.currentPage == index) Color(0xFF1A73E8) else Color.LightGray)
+                    )
+                }
+            }
+
+            // Next / Get Started Button
+            Button(
+                onClick = {
+                    if (pagerState.currentPage < pages.size - 1) {
+                        scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
+                    } else {
+                        navController.navigate("login")
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A73E8))
+            ) {
+                Text(if (pagerState.currentPage == pages.size - 1) "Get Started" else "Next")
+            }
+        }
+    }
+}
+
+@Composable
+fun OnboardingPagerItem(data: OnboardingData) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Placeholder for an Illustration
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+                .background(Color(0xFFE8F0FE), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("BZ", fontSize = 60.sp) // You can replace this with an Image()
+        }
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Text(
+            text = "welcome to biz flow",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF1A73E8)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Biz flowis an app where it helps small businesses manage daily operations in one app.",
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+            color = Color.Gray,
+            modifier = Modifier.padding(horizontal = 20.dp)
+        )
+    }
+}
+
+data class OnboardingData(val title: String, val description: String)
+
+@Composable
+@Preview(showBackground = true)
+fun OnboardingPreview() {
+    OnboardingScreen(rememberNavController())
+}
