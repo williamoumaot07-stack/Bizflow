@@ -1,4 +1,4 @@
-package com.william.bizflow.ui.screens.customer
+package com.william.bizflow.ui.screens.products
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,32 +16,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.william.bizflow.data.CustomerViewModel
-import com.william.bizflow.models.Customer
+import com.william.bizflow.data.ProductViewModel
+import com.william.bizflow.models.Product
 import com.william.bizflow.navigation.Routes
 
 @Composable
-fun CustomerScreen(navController: NavController) {
+fun ProductListScreen(navController: NavController) {
     val context = LocalContext.current
-    val customerViewModel = CustomerViewModel(navController, context)
-    val emptyCustomerState = remember { mutableStateOf(Customer("", "", "", "")) }
-    val emptyCustomersListState = remember { mutableStateListOf<Customer>() }
+    val productViewModel = ProductViewModel(navController, context)
+    val emptyProductState = remember { mutableStateOf(Product("", "", "", "", "")) }
+    val emptyProductsListState = remember { mutableStateListOf<Product>() }
 
-    val customers = customerViewModel.viewCustomers(emptyCustomerState, emptyCustomersListState)
+    val products = productViewModel.viewProducts(emptyProductState, emptyProductsListState)
     var searchQuery by remember { mutableStateOf("") }
-    val filteredCustomers = customers.filter { 
-        it.name.contains(searchQuery, ignoreCase = true) || it.phone.contains(searchQuery)
+    val filteredProducts = products.filter { 
+        it.name.contains(searchQuery, ignoreCase = true) 
     }
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Routes.ADD_CUSTOMER) },
+                onClick = { navController.navigate(Routes.ADD_PRODUCT) },
                 containerColor = Color(0xFF1A73E8)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
@@ -55,12 +53,12 @@ fun CustomerScreen(navController: NavController) {
                 .padding(20.dp)
         ) {
             Text(
-                text = "Customer Records",
+                text = "Product Inventory",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Manage contacts and balances",
+                text = "Manage your stock and prices",
                 fontSize = 14.sp,
                 color = Color.Gray
             )
@@ -71,7 +69,7 @@ fun CustomerScreen(navController: NavController) {
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search customers...") },
+                placeholder = { Text("Search products...") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true
@@ -83,11 +81,11 @@ fun CustomerScreen(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(filteredCustomers) { customer ->
-                    CustomerItem(
-                        customer = customer,
+                items(filteredProducts) { product ->
+                    ProductItem(
+                        product = product,
                         navController = navController,
-                        onDelete = { customerViewModel.deleteCustomer(customer.id) }
+                        onDelete = { productViewModel.deleteProduct(product.id) }
                     )
                 }
             }
@@ -96,7 +94,7 @@ fun CustomerScreen(navController: NavController) {
 }
 
 @Composable
-fun CustomerItem(customer: Customer, navController: NavController, onDelete: () -> Unit) {
+fun ProductItem(product: Product, navController: NavController, onDelete: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -107,13 +105,13 @@ fun CustomerItem(customer: Customer, navController: NavController, onDelete: () 
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(customer.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(customer.phone, fontSize = 13.sp, color = Color.Gray)
+                Text(product.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text("In Stock: ${product.stockCount}", fontSize = 13.sp, color = Color.Gray)
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text(customer.location, fontWeight = FontWeight.Bold, color = Color(0xFF1A73E8))
+                Text("ksh ${product.sellingPrice}", fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50))
                 Row {
-                    IconButton(onClick = { navController.navigate(Routes.UPDATE_CUSTOMER + "/${customer.id}") }) {
+                    IconButton(onClick = { navController.navigate(Routes.UPDATE_PRODUCT + "/${product.id}") }) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.Gray)
                     }
                     IconButton(onClick = onDelete) {
@@ -123,10 +121,4 @@ fun CustomerItem(customer: Customer, navController: NavController, onDelete: () 
             }
         }
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun CustomerPreview() {
-    CustomerScreen(rememberNavController())
 }

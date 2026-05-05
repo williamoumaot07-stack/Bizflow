@@ -1,6 +1,7 @@
-package com.william.bizflow.ui.screens.addproducts
+package com.william.bizflow.ui.screens.products
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -8,16 +9,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.william.bizflow.data.ProductViewModel
-import androidx.compose.foundation.text.KeyboardOptions
+import com.william.bizflow.models.Product
 
 @Composable
-fun AddProductScreen(navController: NavController) {
+fun UpdateProductScreen(navController: NavController, productId: String) {
     var productName by remember { mutableStateOf("") }
     var buyingPrice by remember { mutableStateOf("") }
     var sellingPrice by remember { mutableStateOf("") }
@@ -26,15 +25,29 @@ fun AddProductScreen(navController: NavController) {
     val context = LocalContext.current
     val productViewModel = ProductViewModel(navController, context)
 
+    val nameState = remember { mutableStateOf("") }
+    val bPriceState = remember { mutableStateOf("") }
+    val sPriceState = remember { mutableStateOf("") }
+    val stockState = remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        productViewModel.fetchProduct(productId, nameState, bPriceState, sPriceState, stockState)
+    }
+
+    // Sync local state only once when data is fetched
+    LaunchedEffect(nameState.value) { if(nameState.value.isNotEmpty()) productName = nameState.value }
+    LaunchedEffect(bPriceState.value) { if(bPriceState.value.isNotEmpty()) buyingPrice = bPriceState.value }
+    LaunchedEffect(sPriceState.value) { if(sPriceState.value.isNotEmpty()) sellingPrice = sPriceState.value }
+    LaunchedEffect(stockState.value) { if(stockState.value.isNotEmpty()) stockCount = stockState.value }
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Text("Add New Product", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text("Update Product", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Input Fields
         OutlinedTextField(
             value = productName,
             onValueChange = { productName = it },
@@ -66,28 +79,21 @@ fun AddProductScreen(navController: NavController) {
         OutlinedTextField(
             value = stockCount,
             onValueChange = { stockCount = it },
-            label = { Text("Initial Stock Quantity") },
+            label = { Text("Stock Quantity") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // Save Button
         Button(
             onClick = {
-                productViewModel.saveProduct(productName, buyingPrice, sellingPrice, stockCount)
+                productViewModel.updateProduct(productName, buyingPrice, sellingPrice, stockCount, productId)
             },
             modifier = Modifier.fillMaxWidth().height(55.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A73E8))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
         ) {
-            Text("Save Product", fontSize = 18.sp)
+            Text("Update Product", fontSize = 18.sp)
         }
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun AddProductPreview() {
-    AddProductScreen(rememberNavController())
 }

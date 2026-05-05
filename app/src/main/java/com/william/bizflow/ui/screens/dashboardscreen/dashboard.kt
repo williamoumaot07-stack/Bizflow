@@ -1,4 +1,4 @@
-package com.william.bizflow.ui.screens.dashboard
+package com.william.bizflow.ui.screens.dashboardscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.william.bizflow.navigation.Routes
 
 @Composable
 fun DashboardScreen(navController: NavController) {
@@ -24,13 +25,11 @@ fun DashboardScreen(navController: NavController) {
             .background(Color(0xFFF5F5F5))
             .padding(20.dp)
     ) {
-        // Simple Greeting
         Text("Hello, Business Owner!", fontSize = 14.sp, color = Color.Gray)
         Text("Bizflow Summary", fontSize = 24.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Main Stat Card
         Card(
             modifier = Modifier.fillMaxWidth().height(150.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF1A73E8)),
@@ -38,24 +37,44 @@ fun DashboardScreen(navController: NavController) {
         ) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.Center) {
                 Text("Today's Profit", color = Color.White.copy(alpha = 0.8f))
-                Text("$850.00", color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.ExtraBold)
+                Text("ksh850.00", color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.ExtraBold)
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Quick Row Buttons
+        // Row 1
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            DashboardButton("Record Sale", Color(0xFF4CAF50), Modifier.weight(1f)) { }
-            DashboardButton("Add Product", Color(0xFF2196F3), Modifier.weight(1f)) { }
+            DashboardButton("Inventory", Color(0xFF2196F3), Modifier.weight(1f)) {
+                navController.navigate(Routes.VIEW_PRODUCTS)
+            }
+            DashboardButton("Customers", Color(0xFF4CAF50), Modifier.weight(1f)) {
+                navController.navigate(Routes.CUSTOMER)
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Secondary Row
+        // Row 2
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            DashboardButton("Expenses", Color(0xFFF44336), Modifier.weight(1f)) { }
-            DashboardButton("Reports", Color(0xFFFF9800), Modifier.weight(1f)) { }
+            DashboardButton("Reports", Color(0xFFFF9800), Modifier.weight(1f)) {
+                navController.navigate(Routes.REPORT)
+            }
+            DashboardButton("Record Sale", Color(0xFFE91E63), Modifier.weight(1f)) {
+                navController.navigate(Routes.ADD_SALE)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Row 3
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            DashboardButton("Add Stock", Color(0xFF9C27B0), Modifier.weight(1f)) {
+                navController.navigate(Routes.ADD_PRODUCT)
+            }
+            DashboardButton("Sales History", Color(0xFF795548), Modifier.weight(1f)) {
+                navController.navigate(Routes.VIEW_SALES)
+            }
         }
     }
 }

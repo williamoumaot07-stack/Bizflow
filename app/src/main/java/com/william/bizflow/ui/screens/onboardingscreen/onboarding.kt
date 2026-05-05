@@ -1,4 +1,4 @@
-package com.william.bizflow.ui.screens.onbording
+package com.william.bizflow.ui.screens.onboardingscreen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.william.bizflow.navigation.Routes
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -41,15 +42,17 @@ fun OnboardingScreen(navController: NavController) {
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Skip Button
         TextButton(
-            onClick = { navController.navigate("login") },
+            onClick = {
+                navController.navigate(Routes.LOGIN) {
+                    popUpTo(Routes.ONBOARDING) { inclusive = true }
+                }
+            },
             modifier = Modifier.align(Alignment.End)
         ) {
             Text("Skip", color = Color.Gray)
         }
 
-        // Pager Content
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.weight(1f)
@@ -57,13 +60,11 @@ fun OnboardingScreen(navController: NavController) {
             OnboardingPagerItem(pages[position])
         }
 
-        // Bottom Section: Indicators & Button
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Page Indicators
             Row {
                 repeat(pages.size) { index ->
                     Box(
@@ -76,13 +77,14 @@ fun OnboardingScreen(navController: NavController) {
                 }
             }
 
-            // Next / Get Started Button
             Button(
                 onClick = {
                     if (pagerState.currentPage < pages.size - 1) {
                         scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
                     } else {
-                        navController.navigate("login")
+                        navController.navigate(Routes.LOGIN) {
+                            popUpTo(Routes.ONBOARDING) { inclusive = true }
+                        }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A73E8))
@@ -100,20 +102,19 @@ fun OnboardingPagerItem(data: OnboardingData) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Placeholder for an Illustration
         Box(
             modifier = Modifier
                 .size(200.dp)
                 .background(Color(0xFFE8F0FE), CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text("BZ", fontSize = 60.sp) // You can replace this with an Image()
+            Text("BZ", fontSize = 60.sp)
         }
 
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "welcome to biz flow",
+            text = data.title, // ✅ fixed
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1A73E8)
@@ -122,7 +123,7 @@ fun OnboardingPagerItem(data: OnboardingData) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Biz flowis an app where it helps small businesses manage daily operations in one app.",
+            text = data.description, // ✅ fixed
             fontSize = 16.sp,
             textAlign = TextAlign.Center,
             color = Color.Gray,

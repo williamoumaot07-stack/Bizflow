@@ -26,32 +26,32 @@ import com.william.bizflow.data.AuthViewModel
 import com.william.bizflow.navigation.Routes
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun SignupScreen(navController: NavController) {
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     val context = LocalContext.current
     val authViewModel = AuthViewModel(navController, context)
 
-    // ✅ Gradient background
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF1A73E8), // blue top
-                        Color(0xFFE8F0FE)  // light blue bottom
+                        Color(0xFF1A73E8),
+                        Color(0xFFE8F0FE)
                     )
                 )
             )
     ) {
-        // ✅ White card container
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .fillMaxHeight(0.78f),
+                .fillMaxHeight(0.85f),
             shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(8.dp)
@@ -65,7 +65,6 @@ fun LoginScreen(navController: NavController) {
             ) {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Drag indicator
                 Box(
                     modifier = Modifier
                         .width(40.dp)
@@ -76,20 +75,30 @@ fun LoginScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = "Welcome Back!",
+                    text = "Create Account",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF1A73E8)
                 )
                 Text(
-                    text = "Log in to manage your business",
+                    text = "Register to start managing your business",
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
 
                 Spacer(modifier = Modifier.height(30.dp))
 
-                // Email Field
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Full Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -102,7 +111,6 @@ fun LoginScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Password Field
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -114,22 +122,24 @@ fun LoginScreen(navController: NavController) {
                     shape = RoundedCornerShape(12.dp)
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Forgot Password
-                TextButton(
-                    onClick = { },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Forgot Password?", color = Color(0xFF1A73E8))
-                }
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text("Confirm Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
+                )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
-                // Login Button
                 Button(
                     onClick = {
-                        authViewModel.login(email, password)
+                        authViewModel.signup(name, email, password, confirmPassword)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -137,41 +147,34 @@ fun LoginScreen(navController: NavController) {
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A73E8))
                 ) {
-                    Text("Login", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text("Sign Up", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Sign Up Option
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Don't have an account?", fontSize = 14.sp)
+                    Text("Already have an account?", fontSize = 14.sp)
                     TextButton(onClick = {
-                        navController.navigate(Routes.SIGNUP)
+                        navController.navigate(Routes.LOGIN) {
+                            popUpTo(Routes.SIGNUP) { inclusive = true }
+                        }
                     }) {
-                        Text("Sign Up", color = Color(0xFF1A73E8), fontWeight = FontWeight.Bold)
+                        Text("Login", color = Color(0xFF1A73E8), fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
 
-        // ✅ Logo on top of the gradient
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 60.dp),
+                .padding(top = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(R.drawable.login),
+                painter = painterResource(R.drawable.login), // Reusing same icon
                 contentDescription = "",
-                modifier = Modifier.size(120.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "BizFlow",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                modifier = Modifier.size(100.dp)
             )
         }
     }
@@ -179,6 +182,6 @@ fun LoginScreen(navController: NavController) {
 
 @Composable
 @Preview(showBackground = true)
-fun LoginPreview() {
-    LoginScreen(rememberNavController())
+fun SignupPreview() {
+    SignupScreen(rememberNavController())
 }

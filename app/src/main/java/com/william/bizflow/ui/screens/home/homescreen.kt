@@ -9,7 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun AboutScreen(navController: NavController){
+fun HomeScreen(navController: NavController){
     Column(modifier = Modifier.fillMaxSize()) { }
 
 
@@ -17,6 +17,6 @@ fun AboutScreen(navController: NavController){
 
 @Composable
 @Preview(showBackground = true)
-fun AboutPreview(){
-    AboutScreen(rememberNavController())
+fun HomePreview(){
+    HomeScreen(rememberNavController())
 }
