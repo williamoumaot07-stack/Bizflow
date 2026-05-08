@@ -2,6 +2,8 @@ package com.william.bizflow.ui.screens.products
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -15,6 +17,7 @@ import androidx.navigation.NavController
 import com.william.bizflow.data.ProductViewModel
 import com.william.bizflow.models.Product
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateProductScreen(navController: NavController, productId: String) {
     var productName by remember { mutableStateOf("") }
@@ -40,11 +43,25 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
     LaunchedEffect(sPriceState.value) { if(sPriceState.value.isNotEmpty()) sellingPrice = sPriceState.value }
     LaunchedEffect(stockState.value) { if(stockState.value.isNotEmpty()) stockCount = stockState.value }
     
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
-    ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Update Product", color = Color.White, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(20.dp)
+        ) {
         Text("Update Product", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -52,7 +69,13 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
             value = productName,
             onValueChange = { productName = it },
             label = { Text("Product Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedLabelColor = Color(0xFF1A73E8),
+                unfocusedLabelColor = Color.Gray
+            )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -63,14 +86,26 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
                 onValueChange = { buyingPrice = it },
                 label = { Text("Buying Price") },
                 modifier = Modifier.weight(1f),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedLabelColor = Color(0xFF1A73E8),
+                    unfocusedLabelColor = Color.Gray
+                )
             )
             OutlinedTextField(
                 value = sellingPrice,
                 onValueChange = { sellingPrice = it },
                 label = { Text("Selling Price") },
                 modifier = Modifier.weight(1f),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedLabelColor = Color(0xFF1A73E8),
+                    unfocusedLabelColor = Color.Gray
+                )
             )
         }
 
@@ -81,7 +116,13 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
             onValueChange = { stockCount = it },
             label = { Text("Stock Quantity") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedLabelColor = Color(0xFF1A73E8),
+                unfocusedLabelColor = Color.Gray
+            )
         )
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -96,4 +137,5 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
             Text("Update Product", fontSize = 18.sp)
         }
     }
+}
 }

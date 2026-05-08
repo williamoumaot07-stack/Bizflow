@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -25,6 +26,7 @@ import com.william.bizflow.data.CustomerViewModel
 import com.william.bizflow.models.Customer
 import com.william.bizflow.navigation.Routes
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomerScreen(navController: NavController) {
     val context = LocalContext.current
@@ -39,6 +41,17 @@ fun CustomerScreen(navController: NavController) {
     }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Customers", color = Color.White, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(Routes.ADD_CUSTOMER) },
@@ -74,7 +87,13 @@ fun CustomerScreen(navController: NavController) {
                 placeholder = { Text("Search customers...") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 shape = RoundedCornerShape(12.dp),
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedLabelColor = Color(0xFF1A73E8),
+                    unfocusedLabelColor = Color.Gray
+                )
             )
 
             Spacer(modifier = Modifier.height(10.dp))

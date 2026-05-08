@@ -1,6 +1,8 @@
 package com.william.bizflow.ui.screens.customer
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import com.william.bizflow.data.CustomerViewModel
 import androidx.compose.foundation.text.KeyboardOptions
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddCustomerScreen(navController: NavController) {
     var customerName by remember { mutableStateOf("") }
@@ -25,11 +28,25 @@ fun AddCustomerScreen(navController: NavController) {
     val context = LocalContext.current
     val customerViewModel = CustomerViewModel(navController, context)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
-    ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Add Customer", color = Color.White, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(20.dp)
+        ) {
         Text("Add New Customer", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -37,7 +54,13 @@ fun AddCustomerScreen(navController: NavController) {
             value = customerName,
             onValueChange = { customerName = it },
             label = { Text("Customer Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedLabelColor = Color(0xFF1A73E8),
+                unfocusedLabelColor = Color.Gray
+            )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -47,7 +70,13 @@ fun AddCustomerScreen(navController: NavController) {
             onValueChange = { phoneNumber = it },
             label = { Text("Phone Number") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedLabelColor = Color(0xFF1A73E8),
+                unfocusedLabelColor = Color.Gray
+            )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -56,7 +85,13 @@ fun AddCustomerScreen(navController: NavController) {
             value = location,
             onValueChange = { location = it },
             label = { Text("Location") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedLabelColor = Color(0xFF1A73E8),
+                unfocusedLabelColor = Color.Gray
+            )
         )
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -71,6 +106,7 @@ fun AddCustomerScreen(navController: NavController) {
             Text("Save Customer", fontSize = 18.sp)
         }
     }
+}
 }
 
 @Composable

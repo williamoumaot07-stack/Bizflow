@@ -2,6 +2,8 @@ package com.william.bizflow.ui.screens.customer
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -15,6 +17,7 @@ import androidx.navigation.NavController
 import com.william.bizflow.data.CustomerViewModel
 import com.william.bizflow.models.Customer
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateCustomerScreen(navController: NavController, customerId: String) {
     var customerName by remember { mutableStateOf("") }
@@ -37,11 +40,25 @@ fun UpdateCustomerScreen(navController: NavController, customerId: String) {
     LaunchedEffect(phoneState.value) { if(phoneState.value.isNotEmpty()) phoneNumber = phoneState.value }
     LaunchedEffect(locationState.value) { if(locationState.value.isNotEmpty()) location = locationState.value }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
-    ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Update Customer", color = Color.White, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(20.dp)
+        ) {
         Text("Update Customer", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -49,7 +66,13 @@ fun UpdateCustomerScreen(navController: NavController, customerId: String) {
             value = customerName,
             onValueChange = { customerName = it },
             label = { Text("Customer Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedLabelColor = Color(0xFF1A73E8),
+                unfocusedLabelColor = Color.Gray
+            )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -59,7 +82,13 @@ fun UpdateCustomerScreen(navController: NavController, customerId: String) {
             onValueChange = { phoneNumber = it },
             label = { Text("Phone Number") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedLabelColor = Color(0xFF1A73E8),
+                unfocusedLabelColor = Color.Gray
+            )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -68,7 +97,13 @@ fun UpdateCustomerScreen(navController: NavController, customerId: String) {
             value = location,
             onValueChange = { location = it },
             label = { Text("Location") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedLabelColor = Color(0xFF1A73E8),
+                unfocusedLabelColor = Color.Gray
+            )
         )
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -83,4 +118,5 @@ fun UpdateCustomerScreen(navController: NavController, customerId: String) {
             Text("Update Customer", fontSize = 18.sp)
         }
     }
+}
 }

@@ -103,4 +103,21 @@ class SaleViewModel(var navController: NavController, var context: Context) {
             }
         })
     }
+
+    fun clearSalesHistory() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId == null) {
+            navController.navigate(Routes.LOGIN)
+            return
+        }
+
+        val ref = FirebaseDatabase.getInstance().getReference("Sales/$userId")
+        ref.removeValue().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "Sales history cleared", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }

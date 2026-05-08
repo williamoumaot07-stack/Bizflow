@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import com.william.bizflow.R
 import com.william.bizflow.data.AuthViewModel
 import com.william.bizflow.navigation.Routes
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
@@ -33,19 +36,33 @@ fun LoginScreen(navController: NavController) {
     val context = LocalContext.current
     val authViewModel = AuthViewModel(navController, context)
 
-    // ✅ Gradient background
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF1A73E8), // blue top
-                        Color(0xFFE8F0FE)  // light blue bottom
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Login", color = Color.White, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+            )
+        }
+    ) { padding ->
+        // ✅ Gradient background
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF1A73E8), // blue top
+                            Color(0xFFE8F0FE)  // light blue bottom
+                        )
                     )
                 )
-            )
-    ) {
+        ) {
         // ✅ White card container
         Card(
             modifier = Modifier
@@ -97,7 +114,13 @@ fun LoginScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedLabelColor = Color(0xFF1A73E8),
+                        unfocusedLabelColor = Color.Gray
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -111,14 +134,22 @@ fun LoginScreen(navController: NavController) {
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedLabelColor = Color(0xFF1A73E8),
+                        unfocusedLabelColor = Color.Gray
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Forgot Password
                 TextButton(
-                    onClick = { },
+                    onClick = {
+                        navController.navigate(Routes.FORGOT_PASSWORD)
+                    },
                     modifier = Modifier.align(Alignment.End)
                 ) {
                     Text("Forgot Password?", color = Color(0xFF1A73E8))
@@ -175,6 +206,7 @@ fun LoginScreen(navController: NavController) {
             )
         }
     }
+}
 }
 
 @Composable

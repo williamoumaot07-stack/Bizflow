@@ -18,18 +18,11 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(navController: NavController) {
 
-    // ✅ Check if user is already logged in
+    // ✅ Navigate to Onboarding after delay
     LaunchedEffect(Unit) {
         delay(3000)
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null) {
-            navController.navigate(Routes.DASHBOARD) {
-                popUpTo(Routes.SPLASH) { inclusive = true }
-            }
-        } else {
-            navController.navigate(Routes.ONBOARDING) {
-                popUpTo(Routes.SPLASH) { inclusive = true }
-            }
+        navController.navigate(Routes.ONBOARDING) {
+            popUpTo(Routes.SPLASH) { inclusive = true }
         }
     }
 

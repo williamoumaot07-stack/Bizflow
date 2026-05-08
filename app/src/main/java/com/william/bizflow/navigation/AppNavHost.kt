@@ -9,6 +9,7 @@ import com.william.bizflow.ui.screens.about.AboutScreen
 import com.william.bizflow.ui.screens.addproducts.AddProductScreen
 import com.william.bizflow.ui.screens.auth.LoginScreen
 import com.william.bizflow.ui.screens.auth.SignupScreen
+import com.william.bizflow.ui.screens.auth.ForgotPasswordScreen
 import com.william.bizflow.ui.screens.customer.AddCustomerScreen
 import com.william.bizflow.ui.screens.customer.CustomerScreen
 import com.william.bizflow.ui.screens.dashboardscreen.DashboardScreen
@@ -21,6 +22,7 @@ import com.william.bizflow.ui.screens.report.ReportScreen
 import com.william.bizflow.ui.screens.sales.AddSaleScreen
 import com.william.bizflow.ui.screens.sales.ViewSalesScreen
 import com.william.bizflow.ui.screens.splash.SplashScreen
+import com.william.bizflow.ui.screens.profile.ProfileScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -73,5 +75,9 @@ fun AppNavHost(
         composable(Routes.VIEW_SALES) { ViewSalesScreen(navController) }
 
         composable(Routes.ABOUT) { AboutScreen(navController) }
+
+        composable(Routes.PROFILE) { ProfileScreen(navController) }
+
+        composable(Routes.FORGOT_PASSWORD) { ForgotPasswordScreen(navController) }
     }
 }

@@ -17,4 +17,6 @@ object Routes {
     const val ADD_SALE = "add_sale"
     const val VIEW_SALES = "view_sales"
     const val ABOUT = "about"
+    const val PROFILE = "profile"
+    const val FORGOT_PASSWORD = "forgot_password"
 }
