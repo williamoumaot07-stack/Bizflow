@@ -55,7 +55,7 @@ fun ReportScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Business Insights", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text("Business Insights", color = Color.White, fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -70,7 +70,7 @@ fun ReportScreen(navController: NavController) {
                         Icon(Icons.Default.Share, contentDescription = "Export Report", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A237E))
             )
         }
     ) { padding ->
@@ -81,40 +81,41 @@ fun ReportScreen(navController: NavController) {
                 .padding(padding)
                 .padding(20.dp)
         ) {
-            Text("Analytics Summary", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text("Real-time business tracking", fontSize = 14.sp, color = Color.Gray)
+            Text("Analytics Summary", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color(0xFF1A237E))
+            Text("Real-time business tracking", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.Black)
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // Financial Summary Cards
-            ReportMetricCard("Total Sales Revenue", "ksh $actualRevenue", Color(0xFF1A73E8))
+            ReportMetricCard("Total Sales Revenue", "ksh $actualRevenue", Color(0xFF1A237E))
             Spacer(modifier = Modifier.height(12.dp))
-            ReportMetricCard("Actual Profit", "ksh $actualProfit", Color(0xFF4CAF50))
+            ReportMetricCard("Actual Profit", "ksh $actualProfit", Color(0xFF2E7D32))
             Spacer(modifier = Modifier.height(12.dp))
             ReportMetricCard("Inventory Items", totalProducts.toString(), Color(0xFF9C27B0))
             Spacer(modifier = Modifier.height(12.dp))
-            ReportMetricCard("Total Stock Value", "ksh $totalStockValue", Color(0xFFFF9800))
+            ReportMetricCard("Total Stock Value", "ksh $totalStockValue", Color(0xFFE65100))
             Spacer(modifier = Modifier.height(12.dp))
-            ReportMetricCard("Potential Remaining Profit", "ksh $potentialProfit", Color(0xFF795548))
+            ReportMetricCard("Potential Remaining Profit", "ksh $potentialProfit", Color(0xFF5D4037))
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            Text("Profit Margin Strategy", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+            Text("Profit Margin Strategy", fontWeight = FontWeight.Black, fontSize = 22.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(12.dp))
 
             Surface(
-                modifier = Modifier.fillMaxWidth().height(150.dp),
+                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
                 color = Color.White,
-                shape = RoundedCornerShape(12.dp),
-                shadowElevation = 2.dp
+                shape = RoundedCornerShape(16.dp),
+                shadowElevation = 4.dp
             ) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(16.dp)) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(20.dp)) {
                     Text(
                         text = if (totalProducts > 0 || sales.isNotEmpty()) 
                             "Actual Profit earned so far is ksh $actualProfit from ksh $actualRevenue revenue. Remaining potential inventory profit is ksh $potentialProfit." 
                                else "Add products and record sales to see business analytics.",
-                        color = Color.DarkGray,
-                        fontSize = 14.sp
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
@@ -127,15 +128,15 @@ fun ReportMetricCard(label: String, amount: String, color: Color) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier.padding(24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(label, fontWeight = FontWeight.Medium, color = Color.DarkGray)
-            Text(amount, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = color)
+            Text(label, fontWeight = FontWeight.ExtraBold, color = Color.Black, fontSize = 16.sp)
+            Text(amount, fontWeight = FontWeight.Black, fontSize = 20.sp, color = color)
         }
     }
 }

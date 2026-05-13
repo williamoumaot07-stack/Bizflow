@@ -1,12 +1,12 @@
 package com.william.bizflow.ui.screens.profile
 
+import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import android.os.Handler
 import android.os.Looper
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,9 +28,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.cloudinary.android.MediaManager
@@ -40,6 +39,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.william.bizflow.models.User
+import com.william.bizflow.navigation.Routes
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +53,8 @@ fun ProfileScreen(navController: NavController) {
     var imageUrl by remember { mutableStateOf("") }
     var localImageUri by remember { mutableStateOf<Uri?>(null) }
     var isUploading by remember { mutableStateOf(false) }
+    var isSaving by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     val auth = FirebaseAuth.getInstance()
     val userId = auth.currentUser?.uid
@@ -85,33 +90,25 @@ fun ProfileScreen(navController: NavController) {
             isUploading = true
             
             try {
-                // Ensure MediaManager is initialized
                 try {
                     MediaManager.get()
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     isUploading = false
-                    Toast.makeText(context, "Cloudinary not initialized. Check BizflowApp.kt", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Cloudinary not initialized", Toast.LENGTH_LONG).show()
                     return@let
                 }
 
-                // Copy the URI content to a temporary file
                 val inputStream: InputStream? = context.contentResolver.openInputStream(selectedUri)
                 if (inputStream == null) {
                     isUploading = false
-                    Toast.makeText(context, "Failed to read selected image", Toast.LENGTH_SHORT).show()
                     return@let
                 }
 
                 val tempFile = File(context.cacheDir, "upload_temp_${System.currentTimeMillis()}.jpg")
                 val outputStream = FileOutputStream(tempFile)
-                inputStream.use { input ->
-                    outputStream.use { output ->
-                        input.copyTo(output)
-                    }
-                }
+                inputStream.use { input -> outputStream.use { output -> input.copyTo(output) } }
 
-                // Upload the temporary file path to Cloudinary
-                val uploadPreset = "profile_pcs" // Change this if your preset name is different
+                val uploadPreset = "profile_pcs"
                 
                 MediaManager.get().upload(tempFile.absolutePath)
                     .unsigned(uploadPreset)
@@ -119,137 +116,191 @@ fun ProfileScreen(navController: NavController) {
                         override fun onStart(requestId: String?) {
                             Handler(Looper.getMainLooper()).post { isUploading = true }
                         }
-
                         override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
-
                         override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
                             val url = resultData?.get("secure_url")?.toString() ?: ""
                             Handler(Looper.getMainLooper()).post {
                                 if (userId != null && url.isNotEmpty()) {
                                     val userRef = FirebaseDatabase.getInstance().getReference("Users/$userId/profileImageUrl")
-                                    userRef.setValue(url).addOnCompleteListener { task ->
+                                    userRef.setValue(url).addOnCompleteListener {
                                         isUploading = false
-                                        tempFile.delete() 
-                                        if (task.isSuccessful) {
-                                            imageUrl = url
-                                            localImageUri = null
-                                            Toast.makeText(context, "Profile Updated!", Toast.LENGTH_SHORT).show()
-                                        } else {
-                                            Toast.makeText(context, "Database Save Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                                        }
+                                        tempFile.delete()
+                                        if (it.isSuccessful) imageUrl = url
                                     }
                                 } else {
                                     isUploading = false
                                     tempFile.delete()
-                                    Toast.makeText(context, "Upload success but URL missing", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
-
                         override fun onError(requestId: String?, error: ErrorInfo?) {
                             Handler(Looper.getMainLooper()).post {
                                 isUploading = false
                                 tempFile.delete()
-                                val desc = error?.description ?: "Unknown error"
-                                val code = error?.code ?: -1
-                                
-                                val friendlyHint = when(code) {
-                                    400 -> "Check if preset 'profile_pcs' is UNSIGNED"
-                                    401 -> "Cloud Name is WRONG or account inactive. Update BizflowApp.kt"
-                                    else -> ""
-                                }
-                                
-                                android.util.Log.e("CloudinaryError", "Code: $code, Desc: $desc")
-                                Toast.makeText(context, "Error $code: $desc $friendlyHint", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "Upload Failed", Toast.LENGTH_SHORT).show()
                             }
                         }
-
-                        override fun onReschedule(requestId: String?, error: ErrorInfo?) {
-                            Handler(Looper.getMainLooper()).post { isUploading = false }
-                        }
+                        override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
                     }).dispatch()
             } catch (e: Exception) {
                 isUploading = false
-                Toast.makeText(context, "System Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Logout Confirmation", fontWeight = FontWeight.Black) },
+            text = { Text("Are you sure you want to log out of BizFlow?", fontWeight = FontWeight.Medium) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        auth.signOut()
+                        navController.navigate(Routes.LOGIN) { popUpTo(0) }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                ) {
+                    Text("Logout", color = Color.White, fontWeight = FontWeight.Black)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("Cancel", color = Color(0xFF1A237E), fontWeight = FontWeight.Black)
+                }
+            },
+            containerColor = Color.White
+        )
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text("My Profile", color = Color.White, fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1A73E8)
-                )
+                actions = {
+                    IconButton(onClick = {
+                        val shareText = "Business Profile: $name\nContact: $email\nSent via BizFlow"
+                        val sendIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, shareText)
+                            type = "text/plain"
+                        }
+                        context.startActivity(Intent.createChooser(sendIntent, "Share Profile"))
+                    }) {
+                        Icon(Icons.Default.Share, "Share", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A237E))
             )
         }
-    )
-{ padding ->
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(20.dp),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(130.dp)
                     .clip(CircleShape)
-                    .background(Color.LightGray)
+                    .background(Color(0xFFF1F3F4))
                     .clickable { launcher.launch("image/*") },
                 contentAlignment = Alignment.Center
             ) {
-                if (localImageUri != null || imageUrl.isNotEmpty()) {
-                    AsyncImage(
-                        model = localImageUri ?: imageUrl,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(
-                        Icons.Default.CameraAlt,
-                        contentDescription = "Add Photo",
-                        modifier = Modifier.size(40.dp),
-                        tint = Color.Gray
-                    )
+                AsyncImage(
+                    model = localImageUri ?: imageUrl,
+                    contentDescription = "Profile",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                if (imageUrl.isEmpty() && localImageUri == null) {
+                    Icon(Icons.Default.CameraAlt, "Add Photo", modifier = Modifier.size(40.dp), tint = Color(0xFF1A237E))
                 }
-                
-                if (isUploading) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                if (isUploading) CircularProgressIndicator(color = Color(0xFF1A237E), modifier = Modifier.size(50.dp))
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Editable Name Field
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Business Owner Name", fontWeight = FontWeight.Bold, color = Color.White) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedLabelColor = Color.White,
+                    unfocusedLabelColor = Color.White,
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.White
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Read-only Email Field
+            OutlinedTextField(
+                value = email,
+                onValueChange = {},
+                label = { Text("Email Address (Permanent)", fontWeight = FontWeight.Bold, color = Color.White) },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = false,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledBorderColor = Color.LightGray,
+                    disabledTextColor = Color.White,
+                    disabledLabelColor = Color.White
+                )
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Save Button
+            Button(
+                onClick = {
+                    if (name.trim().isEmpty()) {
+                        Toast.makeText(context, "Name cannot be empty", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+                    isSaving = true
+                    val userRef = FirebaseDatabase.getInstance().getReference("Users/$userId/name")
+                    userRef.setValue(name).addOnCompleteListener {
+                        isSaving = false
+                        if (it.isSuccessful) Toast.makeText(context, "Changes Saved!", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                if (isSaving) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Icon(Icons.Default.Save, null, Modifier.padding(end = 8.dp), tint = Color.White)
+                    Text("Save Profile Changes", fontWeight = FontWeight.Black, color = Color.White)
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Text(text = name, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            Text(text = email, fontSize = 16.sp, color = Color.Gray)
-
             Spacer(modifier = Modifier.weight(1f))
 
+            // Logout Button
             Button(
-                onClick = {
-                    auth.signOut()
-                    navController.navigate("login") {
-                        popUpTo(0)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                onClick = { showLogoutDialog = true },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Logout", color = Color.White)
+                Text("Logout from BizFlow", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Black)
             }
         }
     }

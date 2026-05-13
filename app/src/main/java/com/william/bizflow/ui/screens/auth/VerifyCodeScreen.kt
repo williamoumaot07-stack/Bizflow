@@ -25,16 +25,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 
-fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForgotPasswordScreen(navController: NavController) {
-    var phoneNumber by remember { mutableStateOf("") }
+fun VerifyCodeScreen(navController: NavController, phoneNumber: String) {
+    var code by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val authViewModel = remember { AuthViewModel(navController, context) }
@@ -54,7 +48,7 @@ fun ForgotPasswordScreen(navController: NavController) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Reset Password", color = Color.White, fontWeight = FontWeight.Black) },
+                    title = { Text("Verify Code", color = Color.White, fontWeight = FontWeight.Black) },
                     navigationIcon = {
                         IconButton(onClick = { navController.navigateUp() }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -84,14 +78,14 @@ fun ForgotPasswordScreen(navController: NavController) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Forgot Password?",
+                            text = "Verification",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Black,
                             color = Color(0xFF1A237E)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Enter your phone number to receive a reset code",
+                            text = "Enter the code sent to +254 $phoneNumber",
                             fontSize = 16.sp,
                             color = Color.Black,
                             fontWeight = FontWeight.Bold,
@@ -101,14 +95,13 @@ fun ForgotPasswordScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(30.dp))
 
                         OutlinedTextField(
-                            value = phoneNumber,
-                            onValueChange = { phoneNumber = it },
-                            label = { Text("Phone Number", fontWeight = FontWeight.Bold) },
+                            value = code,
+                            onValueChange = { if (it.length <= 6) code = it },
+                            label = { Text("6-Digit Code", fontWeight = FontWeight.Bold) },
                             modifier = Modifier.fillMaxWidth(),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true,
                             shape = RoundedCornerShape(12.dp),
-                            prefix = { Text("+254 ", fontWeight = FontWeight.Bold) },
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.Black,
                                 unfocusedTextColor = Color.Black,
@@ -124,21 +117,13 @@ fun ForgotPasswordScreen(navController: NavController) {
 
                         Button(
                             onClick = {
-                                if (phoneNumber.length >= 9) {
+                                if (code.length == 6) {
                                     isLoading = true
-                                    val activity = context.findActivity()
-                                    if (activity != null) {
-                                        authViewModel.sendVerificationCode(phoneNumber, activity) { success ->
-                                            if (!success) {
-                                                isLoading = false
-                                            }
-                                        }
-                                    } else {
-                                        Toast.makeText(context, "Critical Error: Activity not found", Toast.LENGTH_SHORT).show()
-                                        isLoading = false
+                                    authViewModel.verifyCode(code) { success ->
+                                        if (!success) isLoading = false
                                     }
                                 } else {
-                                    Toast.makeText(context, "Please enter a valid phone number", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Please enter a valid 6-digit code", Toast.LENGTH_SHORT).show()
                                 }
                             },
                             enabled = !isLoading,
@@ -154,23 +139,20 @@ fun ForgotPasswordScreen(navController: NavController) {
                             if (isLoading) {
                                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                             } else {
-                                Text("Send Code", fontSize = 18.sp, fontWeight = FontWeight.Black)
+                                Text("Verify & Reset", fontSize = 18.sp, fontWeight = FontWeight.Black)
                             }
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // ✅ Added Bypass Button for you
-                        OutlinedButton(
+                        TextButton(
                             onClick = {
-                                phoneNumber = "0700000000"
-                                authViewModel.sendVerificationCode("0700000000", context.findActivity())
+                                val activity = context.findActivity()
+                                authViewModel.resendVerificationCode(phoneNumber, activity)
                             },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF1A237E))
+                            enabled = !isLoading
                         ) {
-                            Text("Use Developer Test Mode (Bypass)", fontWeight = FontWeight.Black)
+                            Text("Resend Code", color = Color(0xFF1A237E), fontWeight = FontWeight.Black)
                         }
                     }
                 }

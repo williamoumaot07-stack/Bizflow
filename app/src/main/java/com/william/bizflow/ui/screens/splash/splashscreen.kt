@@ -29,20 +29,22 @@ fun SplashScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1A73E8)),
+            .background(Color(0xFF1A237E)),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = "BizFlow",
-                fontSize = 40.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                fontSize = 64.sp,
+                fontWeight = FontWeight.Black,
+                color = Color.White,
+                letterSpacing = 2.sp
             )
             Text(
                 text = "Manage your business easily",
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.8f)
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Black,
+                color = Color.White
             )
         }
     }

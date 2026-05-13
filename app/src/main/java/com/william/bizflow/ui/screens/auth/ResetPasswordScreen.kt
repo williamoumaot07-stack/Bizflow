@@ -16,26 +16,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.william.bizflow.data.AuthViewModel
 import com.william.bizflow.navigation.Routes
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
-
-fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForgotPasswordScreen(navController: NavController) {
-    var phoneNumber by remember { mutableStateOf("") }
+fun ResetPasswordScreen(navController: NavController) {
+    var newPassword by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+    
     val context = LocalContext.current
     val authViewModel = remember { AuthViewModel(navController, context) }
 
@@ -54,7 +48,7 @@ fun ForgotPasswordScreen(navController: NavController) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Reset Password", color = Color.White, fontWeight = FontWeight.Black) },
+                    title = { Text("New Password", color = Color.White, fontWeight = FontWeight.Black) },
                     navigationIcon = {
                         IconButton(onClick = { navController.navigateUp() }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -84,14 +78,14 @@ fun ForgotPasswordScreen(navController: NavController) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Forgot Password?",
+                            text = "Set New Password",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Black,
                             color = Color(0xFF1A237E)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Enter your phone number to receive a reset code",
+                            text = "Create a strong password to secure your account",
                             fontSize = 16.sp,
                             color = Color.Black,
                             fontWeight = FontWeight.Bold,
@@ -101,14 +95,36 @@ fun ForgotPasswordScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(30.dp))
 
                         OutlinedTextField(
-                            value = phoneNumber,
-                            onValueChange = { phoneNumber = it },
-                            label = { Text("Phone Number", fontWeight = FontWeight.Bold) },
+                            value = newPassword,
+                            onValueChange = { newPassword = it },
+                            label = { Text("New Password", fontWeight = FontWeight.Bold) },
                             modifier = Modifier.fillMaxWidth(),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                            visualTransformation = PasswordVisualTransformation(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                             singleLine = true,
                             shape = RoundedCornerShape(12.dp),
-                            prefix = { Text("+254 ", fontWeight = FontWeight.Bold) },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.Black,
+                                unfocusedTextColor = Color.Black,
+                                focusedLabelColor = Color(0xFF1A237E),
+                                unfocusedLabelColor = Color.Black,
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                cursorColor = Color(0xFF1A237E)
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        OutlinedTextField(
+                            value = confirmPassword,
+                            onValueChange = { confirmPassword = it },
+                            label = { Text("Confirm Password", fontWeight = FontWeight.Bold) },
+                            modifier = Modifier.fillMaxWidth(),
+                            visualTransformation = PasswordVisualTransformation(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.Black,
                                 unfocusedTextColor = Color.Black,
@@ -124,21 +140,15 @@ fun ForgotPasswordScreen(navController: NavController) {
 
                         Button(
                             onClick = {
-                                if (phoneNumber.length >= 9) {
+                                if (newPassword.length < 6) {
+                                    Toast.makeText(context, "Password too short", Toast.LENGTH_SHORT).show()
+                                } else if (newPassword != confirmPassword) {
+                                    Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                                } else {
                                     isLoading = true
-                                    val activity = context.findActivity()
-                                    if (activity != null) {
-                                        authViewModel.sendVerificationCode(phoneNumber, activity) { success ->
-                                            if (!success) {
-                                                isLoading = false
-                                            }
-                                        }
-                                    } else {
-                                        Toast.makeText(context, "Critical Error: Activity not found", Toast.LENGTH_SHORT).show()
+                                    authViewModel.updatePassword(newPassword) { success ->
                                         isLoading = false
                                     }
-                                } else {
-                                    Toast.makeText(context, "Please enter a valid phone number", Toast.LENGTH_SHORT).show()
                                 }
                             },
                             enabled = !isLoading,
@@ -154,23 +164,8 @@ fun ForgotPasswordScreen(navController: NavController) {
                             if (isLoading) {
                                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                             } else {
-                                Text("Send Code", fontSize = 18.sp, fontWeight = FontWeight.Black)
+                                Text("Update Password", fontSize = 18.sp, fontWeight = FontWeight.Black)
                             }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // ✅ Added Bypass Button for you
-                        OutlinedButton(
-                            onClick = {
-                                phoneNumber = "0700000000"
-                                authViewModel.sendVerificationCode("0700000000", context.findActivity())
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF1A237E))
-                        ) {
-                            Text("Use Developer Test Mode (Bypass)", fontWeight = FontWeight.Black)
                         }
                     }
                 }

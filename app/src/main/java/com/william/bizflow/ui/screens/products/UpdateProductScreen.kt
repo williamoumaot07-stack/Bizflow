@@ -52,7 +52,7 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A237E))
             )
         }
     ) { padding ->
@@ -62,19 +62,22 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
                 .padding(padding)
                 .padding(20.dp)
         ) {
-        Text("Update Product", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text("Update Product", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color(0xFF1A237E))
         Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedTextField(
             value = productName,
             onValueChange = { productName = it },
-            label = { Text("Product Name") },
+            label = { Text("Product Name", fontWeight = FontWeight.Bold) },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
-                focusedLabelColor = Color(0xFF1A73E8),
-                unfocusedLabelColor = Color.Gray
+                focusedLabelColor = Color(0xFF1A237E),
+                unfocusedLabelColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                cursorColor = Color(0xFF1A237E)
             )
         )
 
@@ -84,27 +87,33 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
             OutlinedTextField(
                 value = buyingPrice,
                 onValueChange = { buyingPrice = it },
-                label = { Text("Buying Price") },
+                label = { Text("Buying Price", fontWeight = FontWeight.Bold) },
                 modifier = Modifier.weight(1f),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
-                    focusedLabelColor = Color(0xFF1A73E8),
-                    unfocusedLabelColor = Color.Gray
+                    focusedLabelColor = Color(0xFF1A237E),
+                    unfocusedLabelColor = Color.Black,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    cursorColor = Color(0xFF1A237E)
                 )
             )
             OutlinedTextField(
                 value = sellingPrice,
                 onValueChange = { sellingPrice = it },
-                label = { Text("Selling Price") },
+                label = { Text("Selling Price", fontWeight = FontWeight.Bold) },
                 modifier = Modifier.weight(1f),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
-                    focusedLabelColor = Color(0xFF1A73E8),
-                    unfocusedLabelColor = Color.Gray
+                    focusedLabelColor = Color(0xFF1A237E),
+                    unfocusedLabelColor = Color.Black,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    cursorColor = Color(0xFF1A237E)
                 )
             )
         }
@@ -114,14 +123,17 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
         OutlinedTextField(
             value = stockCount,
             onValueChange = { stockCount = it },
-            label = { Text("Stock Quantity") },
+            label = { Text("Stock Quantity", fontWeight = FontWeight.Bold) },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
-                focusedLabelColor = Color(0xFF1A73E8),
-                unfocusedLabelColor = Color.Gray
+                focusedLabelColor = Color(0xFF1A237E),
+                unfocusedLabelColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                cursorColor = Color(0xFF1A237E)
             )
         )
 
@@ -132,9 +144,9 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
                 productViewModel.updateProduct(productName, buyingPrice, sellingPrice, stockCount, productId)
             },
             modifier = Modifier.fillMaxWidth().height(55.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
         ) {
-            Text("Update Product", fontSize = 18.sp)
+            Text("Update Product", fontSize = 18.sp, fontWeight = FontWeight.Black, color = Color.White)
         }
     }
 }

@@ -10,6 +10,8 @@ import com.william.bizflow.ui.screens.addproducts.AddProductScreen
 import com.william.bizflow.ui.screens.auth.LoginScreen
 import com.william.bizflow.ui.screens.auth.SignupScreen
 import com.william.bizflow.ui.screens.auth.ForgotPasswordScreen
+import com.william.bizflow.ui.screens.auth.VerifyCodeScreen
+import com.william.bizflow.ui.screens.auth.ResetPasswordScreen
 import com.william.bizflow.ui.screens.customer.AddCustomerScreen
 import com.william.bizflow.ui.screens.customer.CustomerScreen
 import com.william.bizflow.ui.screens.dashboardscreen.DashboardScreen
@@ -79,5 +81,14 @@ fun AppNavHost(
         composable(Routes.PROFILE) { ProfileScreen(navController) }
 
         composable(Routes.FORGOT_PASSWORD) { ForgotPasswordScreen(navController) }
+
+        composable(
+            Routes.VERIFY_CODE + "/{phone}",
+            arguments = listOf(navArgument("phone") { type = NavType.StringType })
+        ) { backStackEntry ->
+            VerifyCodeScreen(navController, backStackEntry.arguments?.getString("phone") ?: "")
+        }
+
+        composable(Routes.RESET_PASSWORD) { ResetPasswordScreen(navController) }
     }
 }

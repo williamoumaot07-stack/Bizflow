@@ -32,7 +32,7 @@ fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Bizflow", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text("Bizflow", color = Color.White, fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = {
                         if (!navController.popBackStack()) {
@@ -42,7 +42,7 @@ fun HomeScreen(navController: NavController) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A237E))
             )
         }
     ) { padding ->
@@ -57,28 +57,29 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.4f)
-                    .background(MaterialTheme.colorScheme.primary),
+                    .background(Color(0xFF1A237E)),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
                         imageVector = Icons.Default.Business,
                         contentDescription = "Logo",
-                        modifier = Modifier.size(80.dp),
+                        modifier = Modifier.size(90.dp),
                         tint = Color.White
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         text = "BIZFLOW",
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 38.sp,
+                        fontWeight = FontWeight.Black,
                         color = Color.White,
                         letterSpacing = 4.sp
                     )
                     Text(
                         text = "Manage your business like a pro",
-                        fontSize = 14.sp,
-                        color = Color.White.copy(alpha = 0.8f)
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
                     )
                 }
             }
@@ -94,15 +95,17 @@ fun HomeScreen(navController: NavController) {
             ) {
                 Text(
                     text = "Welcome to Bizflow",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFF1A237E),
                     textAlign = TextAlign.Center
                 )
                 
                 Text(
                     text = "Keep track of your stock, sales, and financial growth in one secure place.",
-                    fontSize = 16.sp,
-                    color = Color.Gray,
+                    fontSize = 18.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
@@ -112,25 +115,25 @@ fun HomeScreen(navController: NavController) {
                         title = "Get Started",
                         subtitle = "Go to your dashboard",
                         icon = Icons.Default.RocketLaunch,
-                        color = MaterialTheme.colorScheme.primary
+                        color = Color(0xFF1A237E)
                     ) {
                         navController.navigate(Routes.DASHBOARD)
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     HomeOption(
                         title = "About App",
                         subtitle = "Learn more about Bizflow",
                         icon = Icons.Default.Info,
-                        color = Color.Gray
+                        color = Color(0xFF455A64)
                     ) {
                         navController.navigate(Routes.ABOUT)
                     }
                 }
 
                 TextButton(onClick = { navController.navigate(Routes.LOGIN) }) {
-                    Text("Logout", color = Color.Red)
+                    Text("Logout", color = Color.Red, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
             }
         }
@@ -166,8 +169,8 @@ fun HomeOption(
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text(text = title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text(text = subtitle, fontSize = 14.sp, color = Color.Gray)
+                Text(text = title, fontWeight = FontWeight.Black, fontSize = 20.sp, color = Color.Black)
+                Text(text = subtitle, fontSize = 16.sp, color = Color.DarkGray, fontWeight = FontWeight.Medium)
             }
         }
     }

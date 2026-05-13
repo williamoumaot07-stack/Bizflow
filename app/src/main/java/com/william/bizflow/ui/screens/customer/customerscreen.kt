@@ -43,19 +43,19 @@ fun CustomerScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Customers", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text("Customers", color = Color.White, fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A237E))
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(Routes.ADD_CUSTOMER) },
-                containerColor = Color(0xFF1A73E8)
+                containerColor = Color(0xFF1A237E)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
             }
@@ -69,13 +69,15 @@ fun CustomerScreen(navController: NavController) {
         ) {
             Text(
                 text = "Customer Records",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Black,
+                color = Color(0xFF1A237E)
             )
             Text(
                 text = "Manage contacts and balances",
-                fontSize = 14.sp,
-                color = Color.Gray
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -92,7 +94,10 @@ fun CustomerScreen(navController: NavController) {
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
                     focusedLabelColor = Color(0xFF1A73E8),
-                    unfocusedLabelColor = Color.Gray
+                    unfocusedLabelColor = Color.DarkGray,
+                    focusedContainerColor = Color(0xFFF8F9FA),
+                    unfocusedContainerColor = Color(0xFFF8F9FA),
+                    cursorColor = Color(0xFF1A73E8)
                 )
             )
 
@@ -126,11 +131,11 @@ fun CustomerItem(customer: Customer, navController: NavController, onDelete: () 
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(customer.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(customer.phone, fontSize = 13.sp, color = Color.Gray)
+                Text(customer.name, fontWeight = FontWeight.Black, fontSize = 18.sp, color = Color.Black)
+                Text(customer.phone, fontSize = 15.sp, color = Color.DarkGray, fontWeight = FontWeight.Medium)
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text(customer.location, fontWeight = FontWeight.Bold, color = Color(0xFF1A73E8))
+                Text(customer.location, fontWeight = FontWeight.Black, color = Color(0xFF1A237E), fontSize = 16.sp)
                 Row {
                     IconButton(onClick = { navController.navigate(Routes.UPDATE_CUSTOMER + "/${customer.id}") }) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.Gray)

@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
+import android.content.Intent
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +31,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import androidx.compose.ui.res.painterResource
+import com.william.bizflow.R
 import com.william.bizflow.data.ProductViewModel
 import com.william.bizflow.data.SaleViewModel
 import com.william.bizflow.models.Product
@@ -102,33 +106,59 @@ fun DashboardScreen(navController: NavController) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+                actions = {
+                    IconButton(onClick = {
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, "Check out my business stats on BizFlow! Today's Profit: Ksh ${String.format("%.2f", todayProfit)}")
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        context.startActivity(shareIntent)
+                    }) {
+                        Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A237E))
             )
         }
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(Color.White)
                 .padding(padding)
-                .padding(20.dp)
+                .padding(horizontal = 20.dp)
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+            
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("Hello, $userName!", fontSize = 14.sp, color = Color.Gray)
-                    Text("Bizflow Summary", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "Hello, $userName!",
+                        fontSize = 16.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Bizflow Summary",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color(0xFF1A237E)
+                    )
                 }
                 
                 Box(
                     modifier = Modifier
-                        .size(50.dp)
+                        .size(55.dp)
                         .clip(CircleShape)
-                        .background(Color.LightGray)
-                        .clickable { navController.navigate(Routes.PROFILE) }
+                        .background(Color(0xFFE8F0FE))
+                        .clickable { navController.navigate(Routes.PROFILE) },
+                    contentAlignment = Alignment.Center
                 ) {
                     if (profileImageUrl.isNotEmpty()) {
                         AsyncImage(
@@ -137,8 +167,88 @@ fun DashboardScreen(navController: NavController) {
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.bz), // Fallback to logo
+                            contentDescription = "Profile",
+                            modifier = Modifier.size(30.dp),
+                            tint = Color(0xFF1A237E)
+                        )
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Today's Profit Card - High Visibility
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF1A237E)),
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+            ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // Decorative background element
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = 20.dp, y = (-20).dp)
+                            .size(120.dp)
+                            .background(Color.White.copy(alpha = 0.1f), CircleShape)
+                    )
+                    
+                    Column(
+                        Modifier
+                            .padding(24.dp)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            "Today's Profit",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                "Ksh ",
+                                color = Color.White.copy(alpha = 0.9f),
+                                fontSize = 26.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                String.format(Locale.getDefault(), "%.2f", todayProfit),
+                                color = Color.White,
+                                fontSize = 42.sp,
+                                fontWeight = FontWeight.Black
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Quick Stats Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                StatCard(
+                    label = "Products",
+                    value = products.size.toString(),
+                    color = Color(0xFF1A237E),
+                    modifier = Modifier.weight(1f)
+                )
+                StatCard(
+                    label = "Total Sales",
+                    value = sales.size.toString(),
+                    color = Color(0xFF1A237E),
+                    modifier = Modifier.weight(1f)
+                )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -169,15 +279,17 @@ fun DashboardScreen(navController: NavController) {
                         lowStockProducts.take(3).forEach { product ->
                             Text(
                                 "• ${product.name} is low on stock (${product.stockCount} left)",
-                                color = Color.DarkGray,
+                                color = Color.Black,
+                                fontWeight = FontWeight.SemiBold,
                                 fontSize = 14.sp
                             )
                         }
                         if (lowStockProducts.size > 3) {
                             Text(
                                 "...and ${lowStockProducts.size - 3} more",
-                                color = Color.Gray,
+                                color = Color.Black,
                                 fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(top = 4.dp)
                             )
                         }
@@ -185,25 +297,14 @@ fun DashboardScreen(navController: NavController) {
                 }
             }
 
-            Card(
-                modifier = Modifier.fillMaxWidth().height(150.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF1A73E8)),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.Center) {
-                    Text("Today's Profit", color = Color.White.copy(alpha = 0.8f))
-                    Text("ksh $todayProfit", color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.ExtraBold)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Row 1
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                DashboardButton("Inventory", Color(0xFF2196F3), Modifier.weight(1f)) {
+                DashboardButton("Inventory", Color(0xFF1A237E), Modifier.weight(1f)) {
                     navController.navigate(Routes.VIEW_PRODUCTS)
                 }
-                DashboardButton("Customers", Color(0xFF4CAF50), Modifier.weight(1f)) {
+                DashboardButton("Customers", Color(0xFF1A237E), Modifier.weight(1f)) {
                     navController.navigate(Routes.CUSTOMER)
                 }
             }
@@ -212,10 +313,10 @@ fun DashboardScreen(navController: NavController) {
 
             // Row 2
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                DashboardButton("Reports", Color(0xFFFF9800), Modifier.weight(1f)) {
+                DashboardButton("Reports", Color(0xFF1A237E), Modifier.weight(1f)) {
                     navController.navigate(Routes.REPORT)
                 }
-                DashboardButton("Record Sale", Color(0xFFE91E63), Modifier.weight(1f)) {
+                DashboardButton("Record Sale", Color(0xFF1A237E), Modifier.weight(1f)) {
                     navController.navigate(Routes.ADD_SALE)
                 }
             }
@@ -224,13 +325,32 @@ fun DashboardScreen(navController: NavController) {
 
             // Row 3
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                DashboardButton("Add Stock", Color(0xFF9C27B0), Modifier.weight(1f)) {
+                DashboardButton("Add Stock", Color(0xFF1A237E), Modifier.weight(1f)) {
                     navController.navigate(Routes.ADD_PRODUCT)
                 }
-                DashboardButton("Sales History", Color(0xFF795548), Modifier.weight(1f)) {
+                DashboardButton("Sales History", Color(0xFF1A237E), Modifier.weight(1f)) {
                     navController.navigate(Routes.VIEW_SALES)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun StatCard(label: String, value: String, color: Color, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.height(100.dp),
+        color = Color.White,
+        shape = RoundedCornerShape(20.dp),
+        shadowElevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(label, color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.ExtraBold)
+            Text(value, color = color, fontSize = 28.sp, fontWeight = FontWeight.Black)
         }
     }
 }
@@ -244,7 +364,7 @@ fun DashboardButton(text: String, color: Color, modifier: Modifier, onClick: () 
         shadowElevation = 2.dp
     ) {
         Box(contentAlignment = Alignment.Center) {
-            Text(text, color = color, fontWeight = FontWeight.Bold)
+            Text(text, color = color, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
         }
     }
 }

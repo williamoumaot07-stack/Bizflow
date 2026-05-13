@@ -6,7 +6,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
+import android.content.Intent
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.william.bizflow.data.ProductViewModel
@@ -46,7 +49,26 @@ fun AddSaleScreen(navController: NavController) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+                actions = {
+                    IconButton(onClick = {
+                        val shareText = if (selectedProduct != null) {
+                            "Business Quote from BizFlow:\nProduct: ${selectedProduct!!.name}\nPrice: Ksh ${selectedProduct!!.sellingPrice}"
+                        } else {
+                            "Check out our business services on BizFlow!"
+                        }
+                        
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, shareText)
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        context.startActivity(shareIntent)
+                    }) {
+                        Icon(Icons.Default.Share, contentDescription = "Share Quote", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A237E))
             )
         }
     ) { padding ->
@@ -58,7 +80,12 @@ fun AddSaleScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (selectedProduct == null) {
-                Text(text = "Select a product from the list below")
+                Text(
+                    text = "Select a product from the list below",
+                    color = Color.Black,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 18.sp
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyColumn {
                     items(products) { prod ->
@@ -66,54 +93,95 @@ fun AddSaleScreen(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp),
-                            onClick = { selectedProduct = prod }
+                            onClick = { selectedProduct = prod },
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(4.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                Text(text = prod.name, style = MaterialTheme.typography.titleLarge)
-                                Text(text = "Stock: ${prod.stockCount}")
-                                Text(text = "Price: ${prod.sellingPrice}")
+                                Text(
+                                    text = prod.name,
+                                    color = Color(0xFF1A237E),
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 20.sp
+                                )
+                                Text(
+                                    text = "Stock: ${prod.stockCount}",
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "Price: ${prod.sellingPrice}",
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
                     }
                 }
             } else {
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1A237E))
+                ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = "Selected Product: ${selectedProduct!!.name}")
-                        Text(text = "Current Stock: ${selectedProduct!!.stockCount}")
-                        Text(text = "Unit Price: ${selectedProduct!!.sellingPrice}")
+                        Text(
+                            text = "Selected Product: ${selectedProduct!!.name}",
+                            color = Color.White,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 20.sp
+                        )
+                        Text(
+                            text = "Current Stock: ${selectedProduct!!.stockCount}",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Unit Price: ${selectedProduct!!.sellingPrice}",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
 
-                        OutlinedButton(onClick = { selectedProduct = null }) {
-                            Text(text = "Change Product")
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = { selectedProduct = null },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                            modifier = Modifier.padding(top = 8.dp)
+                        ) {
+                            Text(text = "Change Product", color = Color.White, fontWeight = FontWeight.Black)
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 OutlinedTextField(
                     value = quantity,
                     onValueChange = { quantity = it },
-                    label = { Text("Quantity") },
+                    label = { Text("Quantity", fontWeight = FontWeight.Bold) },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.Black,
                         unfocusedTextColor = Color.Black,
-                        focusedLabelColor = Color(0xFF1A73E8),
-                        unfocusedLabelColor = Color.Gray
+                        focusedLabelColor = Color(0xFF1A237E),
+                        unfocusedLabelColor = Color.Black,
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        cursorColor = Color(0xFF1A237E)
                     )
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     onClick = {
                         saleViewModel.recordSale(selectedProduct!!, quantity)
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().height(55.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                 ) {
-                    Text(text = "Record Sale")
+                    Text(text = "Record Sale", fontSize = 18.sp, fontWeight = FontWeight.Black, color = Color.White)
                 }
             }
         }

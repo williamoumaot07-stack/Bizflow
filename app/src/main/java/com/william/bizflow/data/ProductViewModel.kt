@@ -27,6 +27,20 @@ class ProductViewModel(var navController: NavController, var context: Context) {
             return
         }
 
+        val bp = buyingPrice.toDoubleOrNull()
+        val sp = sellingPrice.toDoubleOrNull()
+        val sc = stockCount.toIntOrNull()
+
+        if (bp == null || sp == null || sc == null) {
+            Toast.makeText(context, "Price and Stock must be valid numbers", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (bp < 0 || sp < 0 || sc < 0) {
+            Toast.makeText(context, "Values cannot be negative", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val id = System.currentTimeMillis().toString()
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         val productData = Product(name, buyingPrice, sellingPrice, stockCount, id)
@@ -83,6 +97,25 @@ class ProductViewModel(var navController: NavController, var context: Context) {
     }
 
     fun updateProduct(name: String, buyingPrice: String, sellingPrice: String, stockCount: String, id: String) {
+        if (name.isBlank() || buyingPrice.isBlank() || sellingPrice.isBlank() || stockCount.isBlank()) {
+            Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val bp = buyingPrice.toDoubleOrNull()
+        val sp = sellingPrice.toDoubleOrNull()
+        val sc = stockCount.toIntOrNull()
+
+        if (bp == null || sp == null || sc == null) {
+            Toast.makeText(context, "Price and Stock must be valid numbers", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (bp < 0 || sp < 0 || sc < 0) {
+            Toast.makeText(context, "Values cannot be negative", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         val productData = Product(name, buyingPrice, sellingPrice, stockCount, id)
         val productRef = FirebaseDatabase.getInstance().getReference().child("Products/$userId/$id")

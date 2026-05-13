@@ -47,6 +47,34 @@ object ExportUtils {
         }
     }
 
+    fun exportProductsToCSV(context: Context, products: List<com.william.bizflow.models.Product>) {
+        if (products.isEmpty()) {
+            Toast.makeText(context, "No products to export", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val filename = "Bizflow_Inventory_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.csv"
+        val csvHeader = "Product Name,Buying Price,Selling Price,Stock Count\n"
+
+        try {
+            val file = File(context.cacheDir, filename)
+            val out = FileOutputStream(file)
+            out.write(csvHeader.toByteArray())
+
+            for (product in products) {
+                val line = "${product.name},${product.buyingPrice},${product.sellingPrice},${product.stockCount}\n"
+                out.write(line.toByteArray())
+            }
+            out.close()
+
+            shareFile(context, file, "text/csv")
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(context, "Export failed: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     fun exportSalesToPDF(context: Context, sales: List<Sale>) {
         if (sales.isEmpty()) {
             Toast.makeText(context, "No sales to export", Toast.LENGTH_SHORT).show()

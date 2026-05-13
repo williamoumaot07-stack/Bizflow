@@ -49,7 +49,7 @@ fun UpdateCustomerScreen(navController: NavController, customerId: String) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A237E))
             )
         }
     ) { padding ->
@@ -59,19 +59,22 @@ fun UpdateCustomerScreen(navController: NavController, customerId: String) {
                 .padding(padding)
                 .padding(20.dp)
         ) {
-        Text("Update Customer", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text("Update Customer", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color(0xFF1A237E))
         Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedTextField(
             value = customerName,
             onValueChange = { customerName = it },
-            label = { Text("Customer Name") },
+            label = { Text("Customer Name", fontWeight = FontWeight.Bold) },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
-                focusedLabelColor = Color(0xFF1A73E8),
-                unfocusedLabelColor = Color.Gray
+                focusedLabelColor = Color(0xFF1A237E),
+                unfocusedLabelColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                cursorColor = Color(0xFF1A237E)
             )
         )
 
@@ -80,14 +83,17 @@ fun UpdateCustomerScreen(navController: NavController, customerId: String) {
         OutlinedTextField(
             value = phoneNumber,
             onValueChange = { phoneNumber = it },
-            label = { Text("Phone Number") },
+            label = { Text("Phone Number", fontWeight = FontWeight.Bold) },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
-                focusedLabelColor = Color(0xFF1A73E8),
-                unfocusedLabelColor = Color.Gray
+                focusedLabelColor = Color(0xFF1A237E),
+                unfocusedLabelColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                cursorColor = Color(0xFF1A237E)
             )
         )
 
@@ -96,13 +102,16 @@ fun UpdateCustomerScreen(navController: NavController, customerId: String) {
         OutlinedTextField(
             value = location,
             onValueChange = { location = it },
-            label = { Text("Location") },
+            label = { Text("Location", fontWeight = FontWeight.Bold) },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
-                focusedLabelColor = Color(0xFF1A73E8),
-                unfocusedLabelColor = Color.Gray
+                focusedLabelColor = Color(0xFF1A237E),
+                unfocusedLabelColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                cursorColor = Color(0xFF1A237E)
             )
         )
 
@@ -113,9 +122,9 @@ fun UpdateCustomerScreen(navController: NavController, customerId: String) {
                 customerViewModel.updateCustomer(customerName, phoneNumber, location, customerId)
             },
             modifier = Modifier.fillMaxWidth().height(55.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
         ) {
-            Text("Update Customer", fontSize = 18.sp)
+            Text("Update Customer", fontSize = 18.sp, fontWeight = FontWeight.Black, color = Color.White)
         }
     }
 }

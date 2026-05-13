@@ -19,4 +19,6 @@ object Routes {
     const val ABOUT = "about"
     const val PROFILE = "profile"
     const val FORGOT_PASSWORD = "forgot_password"
+    const val VERIFY_CODE = "verify_code"
+    const val RESET_PASSWORD = "reset_password"
 }

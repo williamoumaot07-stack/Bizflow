@@ -27,7 +27,7 @@ fun AboutScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("About Bizflow", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text("About Bizflow", color = Color.White, fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
@@ -37,14 +37,14 @@ fun AboutScreen(navController: NavController) {
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A73E8))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A237E))
             )
         }
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(Color.White)
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(20.dp),
@@ -55,24 +55,25 @@ fun AboutScreen(navController: NavController) {
             // App Logo
             Box(
                 modifier = Modifier
-                    .size(100.dp)
-                    .background(Color(0xFF1A73E8), CircleShape),
+                    .size(110.dp)
+                    .background(Color(0xFF1A237E), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Text("BZ", fontSize = 36.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text("BZ", fontSize = 42.sp, fontWeight = FontWeight.Black, color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("BizFlow", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A73E8))
-            Text("Version 1.0.0", fontSize = 14.sp, color = Color.Gray)
+            Text("BizFlow", fontSize = 36.sp, fontWeight = FontWeight.Black, color = Color(0xFF1A237E))
+            Text("Version 1.0.0", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Black)
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = "Your simple business management companion",
-                fontSize = 14.sp,
-                color = Color.Gray,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.DarkGray,
                 textAlign = TextAlign.Center
             )
 
@@ -167,19 +168,20 @@ If you experience any issues or have suggestions to improve BizFlow, please reac
                 onClick = { navController.popBackStack() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(55.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A73E8)),
-                shape = RoundedCornerShape(12.dp)
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A237E)),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Text("Back to Dashboard", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text("Back to Dashboard", fontSize = 18.sp, fontWeight = FontWeight.Black)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "© 2025 BizFlow. All rights reserved.",
-                fontSize = 12.sp,
-                color = Color.Gray,
+                text = "© 2026 BizFlow. All rights reserved.",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
                 textAlign = TextAlign.Center
             )
 
@@ -193,22 +195,23 @@ fun AboutCard(title: String, content: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(2.dp)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F0FE)),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Text(
                 text = title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1A73E8)
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Black,
+                color = Color(0xFF1A237E)
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = content,
-                fontSize = 14.sp,
-                color = Color(0xFF444444),
-                lineHeight = 22.sp
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black,
+                lineHeight = 24.sp
             )
         }
     }

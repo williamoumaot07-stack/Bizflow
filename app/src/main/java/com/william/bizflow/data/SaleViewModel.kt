@@ -29,10 +29,10 @@ class SaleViewModel(var navController: NavController, var context: Context) {
             return
         }
 
-        val qtyInt = quantity.toIntOrNull() ?: 0
+        val qtyInt = quantity.toIntOrNull()
         val stockInt = product.stockCount.toIntOrNull() ?: 0
 
-        if (qtyInt <= 0) {
+        if (qtyInt == null || qtyInt <= 0) {
             Toast.makeText(context, "Please enter a valid quantity", Toast.LENGTH_SHORT).show()
             return
         }
